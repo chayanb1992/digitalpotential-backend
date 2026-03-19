@@ -1,38 +1,21 @@
-
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
 import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv()  # load .env file
 
-# Get DATABASE_URL from environment variables
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = "postgresql://postgres:HYkggJBTfARDlfcdPNZnNwSQLhYwnsMx@autorack.proxy.rlwy.net:33605/railway"
+print(DATABASE_URL)
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL environment variable not set!")
 
-if not SQLALCHEMY_DATABASE_URL:
-    raise RuntimeError(
-        "DATABASE_URL environment variable not set! "
-        "Make sure you added it in Railway or your .env file."
-    )
-
-# In case your URL uses the old "postgres://" prefix, update it
-if SQLALCHEMY_DATABASE_URL.startswith("postgres://"):
-    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace(
-        "postgres://", "postgresql://", 1
-    )
-
-# Create the SQLAlchemy engine
-engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)
-
-# Create a configured "Session" class
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Base class for models
 Base = declarative_base()
 
-
-# Dependency to get a DB session for FastAPI routes
+# Dependency to get DB session
 def get_db():
     db = SessionLocal()
     try:

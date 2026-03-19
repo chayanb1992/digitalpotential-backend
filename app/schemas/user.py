@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Literal
 
 
 class UserBase(BaseModel):
@@ -15,7 +15,7 @@ class BalanceUpdate(BaseModel):
     amount: float   # can be + or -
 
 class TypeUpdate(BaseModel):
-    type: str
+    type: Literal["buyer", "seller", "admin"]
 
 class UserResponse(UserBase):
     type: str
