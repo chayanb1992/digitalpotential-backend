@@ -3,25 +3,32 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Get DATABASE_URL from environment variable
+# Get DATABASE_URL from environment variables
 SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Fix for older URLs (Railway gives postgres://)
+if not SQLALCHEMY_DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL environment variable not set! "
+        "Make sure you added it in Railway or your .env file."
+    )
+
+# In case your URL uses the old "postgres://" prefix, update it
 if SQLALCHEMY_DATABASE_URL.startswith("postgres://"):
     SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace(
         "postgres://", "postgresql://", 1
     )
 
-# Create engine
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+# Create the SQLAlchemy engine
+engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)
 
-# Create session
+# Create a configured "Session" class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Base class for models
 Base = declarative_base()
 
-# Dependency to get DB
+
+# Dependency to get a DB session for FastAPI routes
 def get_db():
     db = SessionLocal()
     try:
