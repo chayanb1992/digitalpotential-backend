@@ -31,5 +31,5 @@ async def create_store(logo: UploadFile = File(...)):
 
     return {
         "message": "Store created",
-        "logo_url": f"http://localhost:8000/uploads/store_logo/{filename}"
+        "logo_url": f"https://web-production-33681.up.railway.app/uploads/store_logo/{filename}"
     }
